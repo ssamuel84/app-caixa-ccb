@@ -62,7 +62,6 @@
             </form>
         </div>
         <footer class="text-center mt-8 text-sm text-gray-500">
-            <!-- Rodapé Atualizado -->
             <p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p>
         </footer>
     </div>
@@ -122,7 +121,6 @@
                 <div id="transactions-list" class="space-y-4"></div>
             </div>
              <footer class="text-center mt-12 text-sm text-gray-500 no-print">
-                <!-- Rodapé Atualizado -->
                 <p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p>
             </footer>
         </div>
@@ -158,7 +156,6 @@
                     <div id="report-filters-summary" class="mb-4 text-sm"></div>
                     <h3 id="report-title" class="text-xl font-bold text-center my-4"></h3>
                     <div id="report-table-container"></div>
-                    <!-- Rodapé Atualizado -->
                     <div class="text-center mt-12 text-xs text-gray-600"><p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p></div>
                 </div>
             </div>
@@ -166,7 +163,23 @@
     </div>
 
     <!-- Modais -->
-    <div id="saidaModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50 overflow-y-auto"><div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md"><h2 class="text-2xl font-bold mb-6 text-center">Registrar Nova Saída</h2><form id="saida-form"><div class="mb-4"><label for="saida-date" class="block text-sm font-medium">Data</label><input type="date" id="saida-date" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="saida-amount" class="block text-sm font-medium">Valor (R$)</label><input type="number" id="saida-amount" required placeholder="Ex: 250.50" step="0.01" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="saida-caixa" class="block text-sm font-medium">Origem da Saída (Caixa)</label><select id="saida-caixa" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"><option value="">Selecione a Origem...</option><option>Caixa/Cofre 10063</option><option>Banco 1014</option></select></div><div class="mb-4"><label for="saida-centro-custo" class="block text-sm font-medium">Centro de Custo</label><select id="saida-centro-custo" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"><option value="">Selecione...</option><option>ADMINISTRATIVO</option><option>CORDEIRO NETO</option><option>GONZAGUINHA</option><option>NOVO BRASIL</option><option>NOVO HORIZONTE</option><option>VILA JERUSALÉM</option><option>VILA PLANALTO</option><option>JARDIM BELA VISTA</option></select></div><div class="mb-4"><label for="saida-categoria" class="block text-sm font-medium">Categoria</label><select id="saida-categoria" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"><option value="">Selecione...</option><option>Locomoção ADM</</option><option>Depósito Bancário</option><option>Produtos de Limpeza</option><option>Alimentação</option><option>Água</option><option>Energia</option><option>Manutenção e Reparos</option><option>Material de Escritório</option><option>Outra</option></select></div><div class="mb-4"><label for="saida-description" class="block text-sm font-medium">Descrição da Despesa</label><input type="text" id="saida-description" required placeholder="Ex: Compra de materiais para mutirão" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="flex justify-end gap-4 mt-6"><button type="button" onclick="closeModal('saidaModal')" class="py-2 px-6 bg-gray-300 rounded-md">Cancelar</button><button type="submit" class="py-2 px-6 bg-blue-600 text-white rounded-md">Salvar</button></div></form></div></div>
+    <div id="saidaModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50 overflow-y-auto"><div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md"><h2 class="text-2xl font-bold mb-6 text-center">Registrar Nova Saída</h2><form id="saida-form"><div class="mb-4"><label for="saida-date" class="block text-sm font-medium">Data</label><input type="date" id="saida-date" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="saida-amount" class="block text-sm font-medium">Valor (R$)</label><input type="number" id="saida-amount" required placeholder="Ex: 250.50" step="0.01" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="saida-caixa" class="block text-sm font-medium">Origem da Saída (Caixa)</label><select id="saida-caixa" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"><option value="">Selecione a Origem...</option><option>Caixa/Cofre 10063</option><option>Banco 1014</option></select></div><div class="mb-4"><label for="saida-centro-custo" class="block text-sm font-medium">Centro de Custo</label><select id="saida-centro-custo" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"><option value="">Selecione...</option><option>ADMINISTRATIVO</option><option>CORDEIRO NETO</option><option>GONZAGUINHA</option><option>NOVO BRASIL</option><option>NOVO HORIZONTE</option><option>VILA JERUSALÉM</option><option>VILA PLANALTO</option><option>JARDIM BELA VISTA</option></select></div>
+            <!-- LISTA DE CATEGORIA ATUALIZADA -->
+            <div class="mb-4"><label for="saida-categoria" class="block text-sm font-medium">Categoria</label>
+                <select id="saida-categoria" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2">
+                    <option value="">Selecione...</option>
+                    <option>Alimentação</option>
+                    <option>Água</option>
+                    <option>Depósito Bancário</option>
+                    <option>Energia</option>
+                    <option>Locomoção ADM</option>
+                    <option>Manutenção e Reparos</option>
+                    <option>Material de Escritório</option>
+                    <option>Outra</option>
+                    <option>Produtos de Limpeza</option>
+                </select>
+            </div>
+            <div class="mb-4"><label for="saida-description" class="block text-sm font-medium">Descrição da Despesa</label><input type="text" id="saida-description" required placeholder="Ex: Compra de materiais para mutirão" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="flex justify-end gap-4 mt-6"><button type="button" onclick="closeModal('saidaModal')" class="py-2 px-6 bg-gray-300 rounded-md">Cancelar</button><button type="submit" class="py-2 px-6 bg-blue-600 text-white rounded-md">Salvar</button></div></form></div></div>
     <div id="addExpenseModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50 overflow-y-auto"><div class="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md"><h2 class="text-2xl font-bold mb-2 text-center">Adicionar Despesa</h2><p class="text-center text-gray-500 mb-6">Valor Aprovado: <span id="expense-approved-amount" class="font-bold"></span></p><form id="add-expense-form"><input type="hidden" id="expense-transaction-id"><div class="mb-4"><label for="expense-value" class="block text-sm font-medium">Valor Gasto (R$)</label><input type="number" id="expense-value" required placeholder="Ex: 50.25" step="0.01" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="expense-fornecedor" class="block text-sm font-medium">Fornecedor</label><input type="text" id="expense-fornecedor" required placeholder="Nome da loja/empresa" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="expense-description" class="block text-sm font-medium">Descrição do Gasto</label><input type="text" id="expense-description" required placeholder="Ex: Lanche para voluntários" class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-4"><label for="expense-date" class="block text-sm font-medium">Data da Compra</label><input type="date" id="expense-date" required class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md p-2"></div><div class="mb-6"><label for="expense-file" class="block text-sm font-medium">Documento Fiscal (Foto/PDF)</label><input type="file" id="expense-file" accept="image/*,.pdf" capture="user" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"></div><div class="flex justify-end gap-4"><button type="button" onclick="closeModal('addExpenseModal')" class="py-2 px-6 bg-gray-300 rounded-md">Cancelar</button><button type="submit" class="py-2 px-6 bg-blue-600 text-white rounded-md">Adicionar</button></div></form></div></div>
     <div id="confirmModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-[60]"><div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center"><h2 id="confirm-title" class="text-xl font-bold mb-4">Confirmar Ação</h2><p id="confirm-message" class="text-gray-600 mb-8">Você tem certeza?</p><div class="flex justify-center gap-4"><button id="confirm-cancel-btn" class="py-2 px-8 bg-gray-300 rounded-md">Não</button><button id="confirm-ok-btn" class="py-2 px-8 bg-red-600 text-white rounded-md">Sim</button></div></div></div>
     
@@ -190,8 +203,7 @@
         const db = getFirestore(app);
 
         // --- Configuração do Cloudinary ---
-        // ATENÇÃO: Alterado conforme sua última solicitação
-        const CLOUDINARY_CLOUD_NAME = "dhiwk9n9y";
+        const CLOUDINARY_CLOUD_NAME = "dhiwk9n9y"; // ATUALIZADO
         const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
 
         // --- ESTADO DA APLICAÇÃO E SELETORES ---
@@ -232,9 +244,10 @@
             
             setTimeout(() => {
                 toast.classList.add('opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 5000);
-            }
-        
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 5000);
+        }
+
         // --- LÓGICA DE AUTENTICAÇÃO ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -254,7 +267,6 @@
         });
 
         function initializeAppUI() {
-            // Saudação Atualizada
             userDisplay.textContent = `A Paz de Deus Irmão: ${state.currentUser.name}`;
             showView('main-content');
             const now = new Date();
@@ -662,8 +674,8 @@
                             const errorData = await response.json();
                             const errorMessage = errorData?.error?.message || 'Falha ao enviar o arquivo para o Cloudinary.';
                             
-                            if(errorMessage.toLowerCase().includes("upload preset") || errorMessage.toLowerCase().includes("unsigned")) {
-                                throw new Error('Erro no Cloudinary: O "Upload Preset" não está configurado como "Unsigned" ou o nome está incorreto. Verifique as configurações.');
+                            if(errorMessage.toLowerCase().includes("upload preset") || errorMessage.toLowerCase().includes("unsigned") || errorMessage.toLowerCase().includes("api key")) {
+                                throw new Error('Erro no Cloudinary: O "Cloud Name" ou o "Upload Preset" estão incorretos, ou o preset não é "Unsigned". Verifique as configurações.');
                             }
                             throw new Error(`Erro no Cloudinary: ${errorMessage}`);
                         }
