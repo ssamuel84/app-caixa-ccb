@@ -51,7 +51,7 @@
     <!-- Tela de Login -->
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-4">
         <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow-lg">
-          <img src="https://i.imgur.com/z8tV3qF.png" alt="Logo Congregação Cristã no Brasil" class="mx-auto h-20 mb-6">
+            <img src="https://i.imgur.com/z8tV3qF.png" alt="Logo Congregação Cristã no Brasil" class="mx-auto h-20 mb-6">
             <h1 class="text-2xl font-bold text-center text-gray-700 mb-2">CONTROLE DE SAÍDA</h1>
             <p class="text-center text-gray-500 mb-6">Casas de Orações de Canaã dos Carajás – PA</p>
             <form id="login-form">
@@ -62,6 +62,7 @@
             </form>
         </div>
         <footer class="text-center mt-8 text-sm text-gray-500">
+            <!-- Rodapé Atualizado -->
             <p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p>
         </footer>
     </div>
@@ -121,6 +122,7 @@
                 <div id="transactions-list" class="space-y-4"></div>
             </div>
              <footer class="text-center mt-12 text-sm text-gray-500 no-print">
+                <!-- Rodapé Atualizado -->
                 <p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p>
             </footer>
         </div>
@@ -156,7 +158,8 @@
                     <div id="report-filters-summary" class="mb-4 text-sm"></div>
                     <h3 id="report-title" class="text-xl font-bold text-center my-4"></h3>
                     <div id="report-table-container"></div>
-                    <div class="text-center mt-12 text-xs text-gray-600"><p>Desenvolvido por Irmão Samuel Jesus da Silva, Canaã dos Carajás - PA</p></div>
+                    <!-- Rodapé Atualizado -->
+                    <div class="text-center mt-12 text-xs text-gray-600"><p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p></div>
                 </div>
             </div>
         </div>
@@ -187,8 +190,9 @@
         const db = getFirestore(app);
 
         // --- Configuração do Cloudinary ---
-const CLOUDINARY_CLOUD_NAME = "dhiwk9n9y";
-const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
+        // ATENÇÃO: Alterado conforme sua última solicitação
+        const CLOUDINARY_CLOUD_NAME = "dhiwk9n9y";
+        const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
 
         // --- ESTADO DA APLICAÇÃO E SELETORES ---
         const loginScreen = document.getElementById('login-screen');
@@ -228,10 +232,9 @@ const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
             
             setTimeout(() => {
                 toast.classList.add('opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 5000); // Aumentei o tempo para 5 segundos para dar tempo de ler erros
-        }
-
+                setTimeout(() => toast.classList.add('hidden'), 5000);
+            }
+        
         // --- LÓGICA DE AUTENTICAÇÃO ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -251,7 +254,8 @@ const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
         });
 
         function initializeAppUI() {
-            userDisplay.textContent = `Usuário: ${state.currentUser.name}`;
+            // Saudação Atualizada
+            userDisplay.textContent = `A Paz de Deus Irmão: ${state.currentUser.name}`;
             showView('main-content');
             const now = new Date();
             monthSelector.value = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
@@ -626,9 +630,6 @@ const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
                 }
             });
             
-            // ==========================================================
-            //  BLOCO DE CÓDIGO CORRIGIDO E ATUALIZADO
-            // ==========================================================
             addExpenseForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const submitButton = addExpenseForm.querySelector('button[type="submit"]');
@@ -649,18 +650,18 @@ const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
                         const formData = new FormData();
                         formData.append('file', file);
                         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                        
+                        console.log('Enviando para o Cloud Name: [' + CLOUDINARY_CLOUD_NAME + ']');
 
                         const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
                             method: 'POST',
                             body: formData
                         });
                         
-                        // Tratamento de erro detalhado para o upload
                         if (!response.ok) {
                             const errorData = await response.json();
                             const errorMessage = errorData?.error?.message || 'Falha ao enviar o arquivo para o Cloudinary.';
                             
-                            // Mensagem específica para o erro mais comum
                             if(errorMessage.toLowerCase().includes("upload preset") || errorMessage.toLowerCase().includes("unsigned")) {
                                 throw new Error('Erro no Cloudinary: O "Upload Preset" não está configurado como "Unsigned" ou o nome está incorreto. Verifique as configurações.');
                             }
@@ -668,7 +669,7 @@ const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
                         }
 
                         const data = await response.json();
-                        fileUrl = data.secure_url; // URL segura para o arquivo
+                        fileUrl = data.secure_url;
                         fileName = file.name;
                         submitButton.innerHTML = 'Adicionando...';
                     }
