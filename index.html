@@ -187,9 +187,8 @@
         const db = getFirestore(app);
 
         // --- Configuração do Cloudinary ---
-        // Substitua com os seus dados do Cloudinary (ver guia)
-        const CLOUDINARY_CLOUD_NAME = "SEU_CLOUD_NAME"; 
-        const CLOUDINARY_UPLOAD_PRESET = "SEU_UPLOAD_PRESET";
+        const CLOUDINARY_CLOUD_NAME = "dhwk9n9y"; 
+        const CLOUDINARY_UPLOAD_PRESET = "Saida Caixa";
 
         // --- ESTADO DA APLICAÇÃO E SELETORES ---
         const loginScreen = document.getElementById('login-screen');
@@ -634,7 +633,7 @@
                 submitButton.innerHTML = 'Adicionando...';
 
                 try {
-                    if (CLOUDINARY_CLOUD_NAME === "SEU_CLOUD_NAME" || CLOUDINARY_UPLOAD_PRESET === "SEU_UPLOAD_PRESET") {
+                    if (CLOUDINARY_CLOUD_NAME === "dhwk9n9y" || CLOUDINARY_UPLOAD_PRESET === "Saida Caixa") {
                         throw new Error("Cloudinary não configurado. Siga o guia para adicionar as suas chaves.");
                     }
 
