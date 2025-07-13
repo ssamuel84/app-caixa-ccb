@@ -19,7 +19,7 @@
         .status-aprovado { background-color: #dcfce7; color: #166534; }
         .status-cancelado { background-color: #fee2e2; color: #991b1b; }
         .status-finalizado { background-color: #e0e7ff; color: #3730a3; }
-        .receipt-thumbnail { max-width: 80px; max-height: 80px; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
+        .receipt-thumbnail { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }
         .receipt-thumbnail:hover { transform: scale(1.1); }
         .expense-item-estorno { color: #166534; font-style: italic; } /* Green */
         .expense-item-complemento { color: #9a3412; font-style: italic; } /* Orange */
@@ -62,7 +62,7 @@
             </form>
         </div>
         <footer class="text-center mt-8 text-sm text-gray-500">
-            <p>Desenvolvido por Irmão Samuel Jesus da Silva, Canaã dos Carajás - PA</p>
+            <p>Desenvolvido Auxiliares ADM, Canaã dos Carajás - PA</p>
         </footer>
     </div>
     
@@ -227,41 +227,6 @@
             }
         });
 
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('login-error');
-            errorEl.classList.add('hidden');
-
-            signInWithEmailAndPassword(auth, email, password)
-                .catch(error => {
-                    if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                        createUserWithEmailAndPassword(auth, email, password).catch(err => {
-                            errorEl.textContent = `Erro ao criar conta: ${err.message}`;
-                            errorEl.classList.remove('hidden');
-                        });
-                    } else {
-                        errorEl.textContent = "E-mail ou senha inválidos.";
-                        errorEl.classList.remove('hidden');
-                    }
-                });
-        });
-
-        nameForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('userNameInput').value.trim();
-            if (name && auth.currentUser) {
-                const userDocRef = doc(db, "users", auth.currentUser.uid);
-                await setDoc(userDocRef, { name: name, email: auth.currentUser.email }, { merge: true });
-                state.currentUser = { uid: auth.currentUser.uid, email: auth.currentUser.email, name: name };
-                closeModal('nameModal');
-                initializeAppUI();
-            }
-        });
-
-        logoutButton.addEventListener('click', () => signOut(auth));
-
         function initializeAppUI() {
             userDisplay.textContent = `Usuário: ${state.currentUser.name}`;
             showView('main-content');
@@ -351,13 +316,13 @@
                                 return `
                                 <li class="flex justify-between items-center ${typeClass}">
                                     <div class="flex-1">
-                                      <span>${exp.description} (${formatDate(exp.date)})</span>
-                                      <span class="font-medium ml-2">${formatCurrency(exp.value)}</span>
-                                      ${exp.fornecedor ? `<span class="ml-2 italic text-gray-500">(${exp.fornecedor})</span>` : ''}
+                                        <span>${exp.description} (${formatDate(exp.date)})</span>
+                                        <span class="font-medium ml-2">${formatCurrency(exp.value)}</span>
+                                        ${exp.fornecedor ? `<span class="ml-2 italic text-gray-500">(${exp.fornecedor})</span>` : ''}
                                     </div>
                                     <div class="flex items-center">
-                                      ${exp.fileUrl ? `<a href="${exp.fileUrl}" target="_blank" title="Ver anexo"><img src="${exp.fileUrl}" class="receipt-thumbnail" onerror="this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'; this.onerror=null;"/></a>` : ''}
-                                      ${exp.fileUrl ? `<a href="${exp.fileUrl}" download="${exp.fileName || 'anexo'}" title="Baixar anexo" class="ml-2 text-gray-500 hover:text-blue-600"><ion-icon name="download-outline" class="text-2xl"></ion-icon></a>` : ''}
+                                        ${exp.fileUrl ? `<a href="${exp.fileUrl}" target="_blank" title="Ver anexo"><img src="${exp.fileUrl}" class="receipt-thumbnail" onerror="this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'; this.onerror=null;"/></a>` : ''}
+                                        ${exp.fileUrl ? `<a href="${exp.fileUrl}" download="${exp.fileName || 'anexo'}" title="Baixar anexo" class="ml-2 text-gray-500 hover:text-blue-600"><ion-icon name="download-outline" class="text-2xl"></ion-icon></a>` : ''}
                                     </div>
                                 </li>`
                             }).join('')}
@@ -395,7 +360,7 @@
             const monthTransactions = allTransactions.filter(tx => tx.date.startsWith(`${year}-${month}`));
 
             const totalSaidas = monthTransactions.filter(tx => ['aprovado', 'finalizado'].includes(tx.status)).reduce((sum, tx) => sum + tx.amount, 0);
-            const totalGasto = monthTransactions.filter(tx => ['aprovado', 'finalizado'].includes(tx.status)).reduce((sum, tx) => sum + tx.expenses.reduce((s, e) => e.type === 'estorno' ? s - e.value : s + e.value, 0), 0);
+            const totalGasto = monthTransactions.filter(tx => ['aprovado', 'finalizado'].includes(tx.status)).reduce((sum, tx) => sum + tx.expenses.reduce((s, e) => e.type === 'gasto' ? s + e.value : s - e.value, 0), 0);
             
             const pendingApprovals = allTransactions.filter(tx => tx.status === 'pendente' && tx.createdBy.uid !== state.currentUser.uid).length;
             const pendingSettlements = allTransactions.filter(tx => tx.status === 'aprovado').length;
@@ -502,71 +467,6 @@
             document.getElementById('report-title').textContent = `Relatório de Despesas`;
         }
         
-        generateReportBtn.addEventListener('click', generateReport);
-
-        // --- MANIPULADORES DE EVENTOS ---
-        monthSelector.addEventListener('change', startLiveUpdates);
-        caixaSelector.addEventListener('change', loadAndRenderTransactions);
-
-        saidaForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newTransaction = {
-                date: document.getElementById('saida-date').value, amount: parseFloat(document.getElementById('saida-amount').value),
-                caixa: document.getElementById('saida-caixa').value, description: document.getElementById('saida-description').value, 
-                centroCusto: document.getElementById('saida-centro-custo').value, categoria: document.getElementById('saida-categoria').value, 
-                status: 'pendente', createdBy: { uid: state.currentUser.uid, name: state.currentUser.name }, expenses: [], createdAt: serverTimestamp()
-            };
-            await addDoc(collection(db, "transactions_v2"), newTransaction);
-            saidaForm.reset(); closeModal('saidaModal');
-        });
-        
-        addExpenseForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const transactionId = document.getElementById('expense-transaction-id').value;
-            const file = document.getElementById('expense-file').files[0];
-            const newExpenseValue = parseFloat(document.getElementById('expense-value').value);
-            const txDocRef = doc(db, "transactions_v2", transactionId);
-            
-            let fileUrl = null;
-            let fileName = null;
-            if (file) {
-                const storageRef = ref(storage, `attachments/${transactionId}/${Date.now()}-${file.name}`);
-                await uploadBytes(storageRef, file);
-                fileUrl = await getDownloadURL(storageRef);
-                fileName = file.name;
-            }
-
-            const expense = {
-                id: `exp-${Date.now()}`, type: 'gasto', value: newExpenseValue,
-                fornecedor: document.getElementById('expense-fornecedor').value.trim(), description: document.getElementById('expense-description').value,
-                date: document.getElementById('expense-date').value, addedBy: { uid: state.currentUser.uid, name: state.currentUser.name }, 
-                fileUrl: fileUrl, fileName: fileName
-            };
-            
-            await updateDoc(txDocRef, { expenses: arrayUnion(expense) });
-            
-            // Lógica de finalização automática
-            const updatedDocSnap = await getDoc(txDocRef);
-            const tx = updatedDocSnap.data();
-            const totalSpent = tx.expenses.filter(exp => exp.type === 'gasto').reduce((sum, exp) => sum + exp.value, 0);
-            if (totalSpent >= tx.amount) {
-                const difference = totalSpent - tx.amount;
-                let finalUpdate = { status: 'finalizado' };
-                if (difference > 0) {
-                     const complement = {
-                        id: `adj-${Date.now()}`, type: 'complemento', value: difference,
-                        description: 'Complemento de Despesa (Automático)', date: new Date().toISOString().split('T')[0],
-                        addedBy: { uid: state.currentUser.uid, name: state.currentUser.name }, fileUrl: null, fornecedor: 'Sistema', fileName: null
-                    };
-                    finalUpdate.expenses = arrayUnion(complement);
-                }
-                await updateDoc(txDocRef, finalUpdate);
-            }
-            
-            addExpenseForm.reset(); 
-            closeModal('addExpenseModal'); 
-        });
-
         window.handleAction = async (id, action) => {
             const messages = { aprovar: 'Deseja realmente aprovar esta saída?', cancelar: 'Deseja realmente cancelar esta solicitação?', finalizar: 'Isso irá calcular estornos ou complementos e fechar a conta. Deseja continuar?' };
             openConfirmModal(messages[action], async () => {
@@ -617,6 +517,112 @@
         }
 
         // --- INICIALIZAÇÃO ---
+        function init() {
+            // MANIPULADORES DE EVENTOS
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const errorEl = document.getElementById('login-error');
+                errorEl.classList.add('hidden');
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .catch(error => {
+                        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                            createUserWithEmailAndPassword(auth, email, password).catch(err => {
+                                errorEl.textContent = `Erro ao criar conta: ${err.message}`;
+                                errorEl.classList.remove('hidden');
+                            });
+                        } else {
+                            errorEl.textContent = "E-mail ou senha inválidos.";
+                            errorEl.classList.remove('hidden');
+                        }
+                    });
+            });
+
+            nameForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('userNameInput').value.trim();
+                if (name && auth.currentUser) {
+                    const userDocRef = doc(db, "users", auth.currentUser.uid);
+                    await setDoc(userDocRef, { name: name, email: auth.currentUser.email }, { merge: true });
+                    state.currentUser = { uid: auth.currentUser.uid, email: auth.currentUser.email, name: name };
+                    closeModal('nameModal');
+                    initializeAppUI();
+                }
+            });
+
+            logoutButton.addEventListener('click', () => signOut(auth));
+            
+            monthSelector.addEventListener('change', loadAndRenderTransactions);
+            caixaSelector.addEventListener('change', loadAndRenderTransactions);
+
+            saidaForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!state.currentUser) {
+                    alert("Erro: Usuário não autenticado. Por favor, faça login novamente.");
+                    return;
+                }
+                const newTransaction = {
+                    date: document.getElementById('saida-date').value, amount: parseFloat(document.getElementById('saida-amount').value),
+                    caixa: document.getElementById('saida-caixa').value, description: document.getElementById('saida-description').value, 
+                    centroCusto: document.getElementById('saida-centro-custo').value, categoria: document.getElementById('saida-categoria').value, 
+                    status: 'pendente', createdBy: { uid: state.currentUser.uid, name: state.currentUser.name }, expenses: [], createdAt: serverTimestamp()
+                };
+                await addDoc(collection(db, "transactions_v2"), newTransaction);
+                saidaForm.reset(); closeModal('saidaModal');
+            });
+            
+            addExpenseForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const transactionId = document.getElementById('expense-transaction-id').value;
+                const file = document.getElementById('expense-file').files[0];
+                const newExpenseValue = parseFloat(document.getElementById('expense-value').value);
+                const txDocRef = doc(db, "transactions_v2", transactionId);
+                
+                let fileUrl = null;
+                let fileName = null;
+                if (file) {
+                    const storageRef = ref(storage, `attachments/${transactionId}/${Date.now()}-${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    fileUrl = await getDownloadURL(storageRef);
+                    fileName = file.name;
+                }
+
+                const expense = {
+                    id: `exp-${Date.now()}`, type: 'gasto', value: newExpenseValue,
+                    fornecedor: document.getElementById('expense-fornecedor').value.trim(), description: document.getElementById('expense-description').value,
+                    date: document.getElementById('expense-date').value, addedBy: { uid: state.currentUser.uid, name: state.currentUser.name }, 
+                    fileUrl: fileUrl, fileName: fileName
+                };
+                
+                await updateDoc(txDocRef, { expenses: arrayUnion(expense) });
+                
+                // Lógica de finalização automática
+                const updatedDocSnap = await getDoc(txDocRef);
+                const tx = updatedDocSnap.data();
+                const totalSpent = tx.expenses.filter(exp => exp.type === 'gasto').reduce((sum, exp) => sum + exp.value, 0);
+                if (totalSpent >= tx.amount) {
+                    const difference = totalSpent - tx.amount;
+                    let finalUpdate = { status: 'finalizado' };
+                    if (difference > 0) {
+                         const complement = {
+                            id: `adj-${Date.now()}`, type: 'complemento', value: difference,
+                            description: 'Complemento de Despesa (Automático)', date: new Date().toISOString().split('T')[0],
+                            addedBy: { uid: state.currentUser.uid, name: state.currentUser.name }, fileUrl: null, fornecedor: 'Sistema', fileName: null
+                        };
+                        finalUpdate.expenses = arrayUnion(complement);
+                    }
+                    await updateDoc(txDocRef, finalUpdate);
+                }
+                
+                addExpenseForm.reset(); 
+                closeModal('addExpenseModal'); 
+            });
+
+            generateReportBtn.addEventListener('click', generateReport);
+        }
+
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
