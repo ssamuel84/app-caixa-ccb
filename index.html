@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Saída - CCB Canaã dos Carajás</title>
+    <title>TESTE Controle de Saída - CCB Canaã dos Carajás</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -176,7 +176,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, query, where, orderBy, addDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, addDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         
         // Configuração do Firebase
         const firebaseConfig = { apiKey: "AIzaSyAq76GYmmM4LXDzzYEyf-tF5XUvttLkC5g", authDomain: "controle-caixa-ccb-canaa.firebaseapp.com", projectId: "controle-caixa-ccb-canaa", storageBucket: "controle-caixa-ccb-canaa.appspot.com", messagingSenderId: "1059927223587", appId: "1:1059927223587:web:d1e10e99e26e8195393096", measurementId: "G-WYNRD6BP5J" };
@@ -187,7 +187,7 @@
         const db = getFirestore(app);
 
         // --- Configuração do Cloudinary ---
-        const CLOUDINARY_CLOUD_NAME = "dhiwk9n9y"; 
+        const CLOUDINARY_CLOUD_NAME = "dhwk9n9y"; 
         const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
 
         // --- ESTADO DA APLICAÇÃO E SELETORES ---
@@ -633,7 +633,7 @@
                 submitButton.innerHTML = 'Adicionando...';
 
                 try {
-                    if (CLOUDINARY_CLOUD_NAME === "dhiwk9n9y" || CLOUDINARY_UPLOAD_PRESET === "saida_caixa") {
+                    if (CLOUDINARY_CLOUD_NAME === "SEU_CLOUD_NAME" || CLOUDINARY_UPLOAD_PRESET === "SEU_UPLOAD_PRESET") {
                         throw new Error("Cloudinary não configurado. Siga o guia para adicionar as suas chaves.");
                     }
 
