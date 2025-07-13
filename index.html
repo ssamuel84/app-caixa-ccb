@@ -62,7 +62,7 @@
             </form>
         </div>
         <footer class="text-center mt-8 text-sm text-gray-500">
-            <p>Desenvolvido por Auxiliares ADM, Canaã dos Carajás - PA</p>
+            <p>Desenvolvido por Irmão Samuel Jesus da Silva, Canaã dos Carajás - PA</p>
         </footer>
     </div>
     
@@ -177,16 +177,19 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, query, where, orderBy, addDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
-
-        // Configuração do Firebase (extraída do seu projeto)
+        
+        // Configuração do Firebase
         const firebaseConfig = { apiKey: "AIzaSyAq76GYmmM4LXDzzYEyf-tF5XUvttLkC5g", authDomain: "controle-caixa-ccb-canaa.firebaseapp.com", projectId: "controle-caixa-ccb-canaa", storageBucket: "controle-caixa-ccb-canaa.appspot.com", messagingSenderId: "1059927223587", appId: "1:1059927223587:web:d1e10e99e26e8195393096", measurementId: "G-WYNRD6BP5J" };
         
         // Inicialização dos serviços Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
+
+        // --- Configuração do Cloudinary ---
+        // Substitua com os seus dados do Cloudinary (ver guia)
+        const CLOUDINARY_CLOUD_NAME = "SEU_CLOUD_NAME"; 
+        const CLOUDINARY_UPLOAD_PRESET = "SEU_UPLOAD_PRESET";
 
         // --- ESTADO DA APLICAÇÃO E SELETORES ---
         const loginScreen = document.getElementById('login-screen');
@@ -631,6 +634,10 @@
                 submitButton.innerHTML = 'Adicionando...';
 
                 try {
+                    if (CLOUDINARY_CLOUD_NAME === "SEU_CLOUD_NAME" || CLOUDINARY_UPLOAD_PRESET === "SEU_UPLOAD_PRESET") {
+                        throw new Error("Cloudinary não configurado. Siga o guia para adicionar as suas chaves.");
+                    }
+
                     const transactionId = document.getElementById('expense-transaction-id').value;
                     const file = document.getElementById('expense-file').files[0];
                     const newExpenseValue = parseFloat(document.getElementById('expense-value').value);
@@ -638,11 +645,26 @@
                     
                     let fileUrl = null;
                     let fileName = null;
+
                     if (file) {
-                        const storageRef = ref(storage, `attachments/${transactionId}/${Date.now()}-${file.name}`);
-                        await uploadBytes(storageRef, file);
-                        fileUrl = await getDownloadURL(storageRef);
+                        submitButton.innerHTML = 'Enviando ficheiro...';
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Falha ao enviar o ficheiro para o Cloudinary.');
+                        }
+
+                        const data = await response.json();
+                        fileUrl = data.secure_url;
                         fileName = file.name;
+                        submitButton.innerHTML = 'Adicionando...';
                     }
 
                     const expense = {
