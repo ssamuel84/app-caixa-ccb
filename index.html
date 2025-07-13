@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMUEL Controle de Saída - CCB Canaã dos Carajás</title>
+    <title>Controle de Saída - CCB Canaã dos Carajás</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -187,8 +187,8 @@
         const db = getFirestore(app);
 
         // --- Configuração do Cloudinary ---
-        const CLOUDINARY_CLOUD_NAME = "dhwk9n9y"; 
-        const CLOUDINARY_UPLOAD_PRESET = "saida_caixa";
+        const CLOUDINARY_CLOUD_NAME = "dhwk9n9y"; // << VERIFIQUE SE ESTE É O SEU "CLOUD NAME"
+        const CLOUDINARY_UPLOAD_PRESET = "saida_caixa"; // << NOME DO UPLOAD PRESET "UNSIGNED"
 
         // --- ESTADO DA APLICAÇÃO E SELETORES ---
         const loginScreen = document.getElementById('login-screen');
@@ -229,7 +229,7 @@
             setTimeout(() => {
                 toast.classList.add('opacity-0');
                 setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 4000);
+            }, 5000); // Aumentei o tempo para 5 segundos para dar tempo de ler erros
         }
 
         // --- LÓGICA DE AUTENTICAÇÃO ---
@@ -277,14 +277,14 @@
         function startLiveUpdates() {
             if (unsubscribe) unsubscribe();
             
-            let q = query(collection(db, "transactions_v2"), orderBy("date", "desc"));
+            let q = query(collection(db, "transactions_v2"), orderBy("createdAt", "desc"));
             
             unsubscribe = onSnapshot(q, (snapshot) => {
                 state.transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 loadAndRenderTransactions();
             }, (error) => {
                 console.error("Erro ao ouvir as transações:", error);
-                showToast("Não foi possível carregar os dados. Verifique a sua ligação.");
+                showToast("Não foi possível carregar os dados. Verifique a sua conexão.");
             });
         }
 
@@ -347,7 +347,7 @@
                                         ${exp.fornecedor ? `<span class="ml-2 italic text-gray-500">(${exp.fornecedor})</span>` : ''}
                                     </div>
                                     <div class="flex items-center">
-                                        ${exp.fileUrl ? `<a href="${exp.fileUrl}" target="_blank" title="Ver anexo"><img src="${exp.fileUrl.startsWith('http') ? exp.fileUrl : 'https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'}" class="receipt-thumbnail" onerror="this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'; this.onerror=null;"/></a>` : ''}
+                                        ${exp.fileUrl ? `<a href="${exp.fileUrl}" target="_blank" title="Ver anexo"><img src="${exp.fileUrl}" class="receipt-thumbnail" onerror="this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'; this.onerror=null;"/></a>` : ''}
                                         ${exp.fileUrl ? `<a href="${exp.fileUrl}" download="${exp.fileName || 'anexo'}" title="Baixar anexo" class="ml-2 text-gray-500 hover:text-blue-600"><ion-icon name="download-outline" class="text-2xl"></ion-icon></a>` : ''}
                                     </div>
                                 </li>`
@@ -386,7 +386,7 @@
             const monthTransactions = allTransactions.filter(tx => tx.date.startsWith(`${year}-${month}`));
 
             const totalSaidas = monthTransactions.filter(tx => ['aprovado', 'finalizado'].includes(tx.status)).reduce((sum, tx) => sum + tx.amount, 0);
-            const totalGasto = monthTransactions.filter(tx => ['aprovado', 'finalizado'].includes(tx.status)).reduce((sum, tx) => sum + tx.expenses.reduce((s, e) => e.type === 'gasto' ? s + e.value : s - e.value, 0), 0);
+            const totalGasto = monthTransactions.filter(tx => ['aprovado', 'finalizado'].includes(tx.status)).reduce((sum, tx) => sum + tx.expenses.reduce((s, e) => e.type === 'gasto' ? s + e.value : (e.type === 'estorno' ? s - e.value : s), 0), 0);
             
             const pendingApprovals = allTransactions.filter(tx => tx.status === 'pendente' && state.currentUser && tx.createdBy.uid !== state.currentUser.uid).length;
             const pendingSettlements = allTransactions.filter(tx => tx.status === 'aprovado').length;
@@ -405,10 +405,10 @@
             const uniqueCaixas = [...new Set(state.transactions.map(tx => tx.caixa))];
 
             ccSelect.innerHTML = '<option value="all">Todos</option>';
-            uniqueCCs.forEach(cc => { if(cc) ccSelect.innerHTML += `<option value="${cc}">${cc}</option>`; });
+            uniqueCCs.sort().forEach(cc => { if(cc) ccSelect.innerHTML += `<option value="${cc}">${cc}</option>`; });
 
             caixaSelect.innerHTML = '<option value="all">Todos</option>';
-            uniqueCaixas.forEach(caixa => { if(caixa) caixaSelect.innerHTML += `<option value="${caixa}">${caixa}</option>`; });
+            uniqueCaixas.sort().forEach(caixa => { if(caixa) caixaSelect.innerHTML += `<option value="${caixa}">${caixa}</option>`; });
             
             document.getElementById('report-table-container').innerHTML = '<p class="text-center text-gray-500">Use os filtros acima e clique em "Gerar Relatório".</p>';
             document.getElementById('report-title').textContent = '';
@@ -626,6 +626,9 @@
                 }
             });
             
+            // ==========================================================
+            //  BLOCO DE CÓDIGO CORRIGIDO E ATUALIZADO
+            // ==========================================================
             addExpenseForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const submitButton = addExpenseForm.querySelector('button[type="submit"]');
@@ -633,10 +636,6 @@
                 submitButton.innerHTML = 'Adicionando...';
 
                 try {
-                    if (CLOUDINARY_CLOUD_NAME === "SEU_CLOUD_NAME" || CLOUDINARY_UPLOAD_PRESET === "SEU_UPLOAD_PRESET") {
-                        throw new Error("Cloudinary não configurado. Siga o guia para adicionar as suas chaves.");
-                    }
-
                     const transactionId = document.getElementById('expense-transaction-id').value;
                     const file = document.getElementById('expense-file').files[0];
                     const newExpenseValue = parseFloat(document.getElementById('expense-value').value);
@@ -646,7 +645,7 @@
                     let fileName = null;
 
                     if (file) {
-                        submitButton.innerHTML = 'Enviando ficheiro...';
+                        submitButton.innerHTML = 'Enviando anexo...';
                         const formData = new FormData();
                         formData.append('file', file);
                         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -655,13 +654,21 @@
                             method: 'POST',
                             body: formData
                         });
-
+                        
+                        // Tratamento de erro detalhado para o upload
                         if (!response.ok) {
-                            throw new Error('Falha ao enviar o ficheiro para o Cloudinary.');
+                            const errorData = await response.json();
+                            const errorMessage = errorData?.error?.message || 'Falha ao enviar o arquivo para o Cloudinary.';
+                            
+                            // Mensagem específica para o erro mais comum
+                            if(errorMessage.toLowerCase().includes("upload preset") || errorMessage.toLowerCase().includes("unsigned")) {
+                                throw new Error('Erro no Cloudinary: O "Upload Preset" não está configurado como "Unsigned" ou o nome está incorreto. Verifique as configurações.');
+                            }
+                            throw new Error(`Erro no Cloudinary: ${errorMessage}`);
                         }
 
                         const data = await response.json();
-                        fileUrl = data.secure_url;
+                        fileUrl = data.secure_url; // URL segura para o arquivo
                         fileName = file.name;
                         submitButton.innerHTML = 'Adicionando...';
                     }
@@ -684,6 +691,7 @@
                     const updatedDocSnap = await getDoc(txDocRef);
                     const tx = updatedDocSnap.data();
                     const totalSpent = tx.expenses.filter(exp => exp.type === 'gasto').reduce((sum, exp) => sum + exp.value, 0);
+                    
                     if (totalSpent >= tx.amount) {
                         const difference = totalSpent - tx.amount;
                         let finalUpdate = { status: 'finalizado' };
