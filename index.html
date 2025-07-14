@@ -370,7 +370,8 @@
                                 
                                 let thumbnailHtml = '';
                                 if(exp.fileUrl) {
-                                    if(exp.fileUrl.toLowerCase().endsWith('.pdf')){
+                                    const isPdf = exp.fileName?.toLowerCase().endsWith('.pdf') || exp.fileUrl?.toLowerCase().includes('.pdf');
+                                    if(isPdf){
                                         thumbnailHtml = `<div class="receipt-icon"><ion-icon name="document-text-outline"></ion-icon></div>`;
                                     } else {
                                         thumbnailHtml = `<img src="${exp.fileUrl}" class="receipt-thumbnail" onerror="this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'; this.onerror=null;"/>`;
@@ -695,18 +696,15 @@
                     if (file) {
                         submitButton.innerHTML = 'Enviando anexo...';
                         
-                        const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
-                        
+                        // CORREÇÃO DEFINITIVA: Determinar a URL do endpoint com base no tipo de arquivo
+                        const resource_type = file.type.startsWith('image/') ? 'image' : 'raw';
+                        const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resource_type}/upload`;
+
                         const formData = new FormData();
                         formData.append('file', file);
                         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                         
-                        // CORREÇÃO: Força o tipo de recurso para 'raw' se não for uma imagem
-                        if (!file.type.startsWith('image/')) {
-                            formData.append('resource_type', 'raw');
-                        }
-                        
-                        const response = await fetch(uploadUrl, {
+                        const response = await fetch(uploadUrl, { // Usar a URL dinâmica
                             method: 'POST',
                             body: formData
                         });
