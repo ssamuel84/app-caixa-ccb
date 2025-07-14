@@ -695,12 +695,16 @@
                     if (file) {
                         submitButton.innerHTML = 'Enviando anexo...';
                         
-                        const resource_type = file.type.startsWith('image/') ? 'image' : 'raw';
-                        const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resource_type}/upload`;
-
+                        const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
+                        
                         const formData = new FormData();
                         formData.append('file', file);
                         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                        
+                        // CORREÇÃO: Força o tipo de recurso para 'raw' se não for uma imagem
+                        if (!file.type.startsWith('image/')) {
+                            formData.append('resource_type', 'raw');
+                        }
                         
                         const response = await fetch(uploadUrl, {
                             method: 'POST',
