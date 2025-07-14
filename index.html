@@ -368,15 +368,23 @@
                             ${tx.expenses.map(exp => {
                                 const typeClass = `expense-item-${exp.type}`;
                                 
+                                // --- CORREÇÃO FINAL ---
                                 let thumbnailHtml = '';
+                                let linkUrl = exp.fileUrl; // URL padrão
                                 if(exp.fileUrl) {
                                     const isPdf = exp.fileName?.toLowerCase().endsWith('.pdf') || exp.fileUrl?.toLowerCase().includes('.pdf');
                                     if(isPdf){
                                         thumbnailHtml = `<div class="receipt-icon"><ion-icon name="document-text-outline"></ion-icon></div>`;
+                                        // Adiciona a flag 'fl_attachment' para forçar o download
+                                        const urlParts = exp.fileUrl.split('/upload/');
+                                        if (urlParts.length === 2) {
+                                            linkUrl = `${urlParts[0]}/upload/fl_attachment/${urlParts[1]}`;
+                                        }
                                     } else {
                                         thumbnailHtml = `<img src="${exp.fileUrl}" class="receipt-thumbnail" onerror="this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Anexo'; this.onerror=null;"/>`;
                                     }
                                 }
+                                // --- FIM DA CORREÇÃO ---
 
                                 return `
                                 <li class="flex justify-between items-center ${typeClass}">
@@ -386,8 +394,8 @@
                                         ${exp.fornecedor ? `<span class="ml-2 italic text-gray-500">(${exp.fornecedor})</span>` : ''}
                                     </div>
                                     <div class="flex items-center">
-                                        ${exp.fileUrl ? `<a href="${exp.fileUrl}" target="_blank" title="Ver anexo">${thumbnailHtml}</a>` : ''}
-                                        ${exp.fileUrl ? `<a href="${exp.fileUrl}" download="${exp.fileName || 'anexo'}" title="Baixar anexo" class="ml-2 text-gray-500 hover:text-blue-600"><ion-icon name="download-outline" class="text-2xl"></ion-icon></a>` : ''}
+                                        ${exp.fileUrl ? `<a href="${linkUrl}" target="_blank" title="Ver anexo">${thumbnailHtml}</a>` : ''}
+                                        ${exp.fileUrl ? `<a href="${linkUrl}" download="${exp.fileName || 'anexo'}" title="Baixar anexo" class="ml-2 text-gray-500 hover:text-blue-600"><ion-icon name="download-outline" class="text-2xl"></ion-icon></a>` : ''}
                                     </div>
                                 </li>`
                             }).join('')}
@@ -696,7 +704,6 @@
                     if (file) {
                         submitButton.innerHTML = 'Enviando anexo...';
                         
-                        // CORREÇÃO DEFINITIVA: Determinar a URL do endpoint com base no tipo de arquivo
                         const resource_type = file.type.startsWith('image/') ? 'image' : 'raw';
                         const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resource_type}/upload`;
 
@@ -704,7 +711,7 @@
                         formData.append('file', file);
                         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                         
-                        const response = await fetch(uploadUrl, { // Usar a URL dinâmica
+                        const response = await fetch(uploadUrl, {
                             method: 'POST',
                             body: formData
                         });
